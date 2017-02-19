@@ -1,5 +1,6 @@
 package pro.deves.sunshineapp;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,6 +51,7 @@ public class ForecastFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.forecastfragment, menu);
+        inflater.inflate(R.menu.main, menu);
     }
 
     @Override
@@ -62,12 +63,16 @@ public class ForecastFragment extends Fragment {
             weatherTask.execute("Berlin");
             return true;
         }
+        if (id == R.id.action_settings){
+            Intent intent = new Intent(getActivity(), SettingsActivity.class);
+            startActivity(intent);
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         // Create some dummy data for the ListView.  Here's a sample weekly forecast
         String[] data = {
@@ -95,7 +100,10 @@ public class ForecastFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 String forecast = mForecastAdapter.getItem(position);
-                Toast.makeText(getActivity(), forecast, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity(), forecast, Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getActivity(), DetailActivity.class);
+                intent.putExtra(DetailFragment.DETAIL_EXTRA_TEXT, forecast);
+                startActivity(intent);
             }
         });
 
