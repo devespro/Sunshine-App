@@ -60,7 +60,6 @@ public class ForecastFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.forecastfragment, menu);
-        inflater.inflate(R.menu.main, menu);
     }
 
     @Override
@@ -71,11 +70,7 @@ public class ForecastFragment extends Fragment {
             updateWeather();
             return true;
         }
-        if (id == R.id.action_settings){
-            Intent intent = new Intent(getActivity(), SettingsActivity.class);
-            startActivity(intent);
-            return true;
-        }
+
         return super.onOptionsItemSelected(item);
     }
 
