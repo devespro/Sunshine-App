@@ -1,9 +1,11 @@
 package pro.deves.sunshineapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
 import android.util.Log;
@@ -29,7 +31,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -39,6 +40,8 @@ public class ForecastFragment extends Fragment {
 
     private ArrayAdapter<String> mForecastAdapter;
 
+    private static final String LOG_TAG = ForecastFragment.class.getSimpleName();
+
     public ForecastFragment() {
     }
 
@@ -46,6 +49,12 @@ public class ForecastFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateWeather();
     }
 
     @Override
@@ -59,8 +68,7 @@ public class ForecastFragment extends Fragment {
 
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-            FetchWeatherTask weatherTask = new FetchWeatherTask();
-            weatherTask.execute("Berlin");
+            updateWeather();
             return true;
         }
         if (id == R.id.action_settings){
@@ -75,16 +83,8 @@ public class ForecastFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         // Create some dummy data for the ListView.  Here's a sample weekly forecast
-        String[] data = {
-                "Mon 6/23 - Sunny - 31/17",
-                "Tue 6/24 - Foggy - 21/8",
-                "Wed 6/25 - Cloudy - 22/17",
-                "Thurs 6/26 - Rainy - 18/11",
-                "Fri 6/27 - Foggy - 21/10",
-                "Sat 6/28 - Sunny - 23/18",
-                "Sun 6/29 - Sunny - 20/7"
-        };
-        List<String> weekForecast = new ArrayList<>(Arrays.asList(data));
+
+        List<String> weekForecast = new ArrayList<>();
 
         mForecastAdapter = new ArrayAdapter<>(getActivity(),
                                         R.layout.list_item_forecast, // The name of the layout ID.
@@ -110,6 +110,13 @@ public class ForecastFragment extends Fragment {
         return rootView;
     }
 
+    private void updateWeather(){
+        FetchWeatherTask weatherTask = new FetchWeatherTask();
+        SharedPreferences preference = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String prefLocation = preference.getString(getResources().getString(R.string.pref_location_key), getResources().getString(R.string.pref_location_default));
+        weatherTask.execute(prefLocation);
+    }
+
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
         private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
@@ -123,6 +130,13 @@ public class ForecastFragment extends Fragment {
 
         private String formatHighLows(double high, double low) {
             // For presentation, assume the user doesn't care about tenths of a degree.
+            //T(°F) = T(°C) × 9/5 + 32
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String prefUnits = preferences.getString(getString(R.string.pref_units_key), getString(R.string.pref_units_default));
+            if (!prefUnits.equals("celsius")){
+                high = high * 9/5 + 32;
+                low = low * 9/5 + 32;
+            }
             long roundedHigh = Math.round(high);
             long roundedLow = Math.round(low);
 
@@ -229,7 +243,7 @@ public class ForecastFragment extends Fragment {
                 final String UNITS_PARAM = "units";
                 final String DAYS_PARAM = "cnt";
                 final String APPID_PARAM = "APPID";
-
+                Log.i(LOG_TAG, "doInBackground: getting data for " + params[0]);
                 Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
                         .appendQueryParameter(QUERY_PARAM, params[0])
                         .appendQueryParameter(FORMAT_PARAM, format)
