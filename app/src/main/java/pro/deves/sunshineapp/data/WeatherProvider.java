@@ -17,6 +17,7 @@ public class WeatherProvider extends ContentProvider {
 
     private static final UriMatcher uriMatcher = buildUriMatcher();
     private static final SQLiteQueryBuilder sWeatherByLocationSettingQueryBuilder;
+    public static final String LOG_TAG = WeatherProvider.class.getSimpleName();
     private WeatherDbHelper mOpenHelper;
 
     public static final int WEATHER = 100;
