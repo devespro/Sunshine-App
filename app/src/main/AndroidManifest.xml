@@ -11,7 +11,9 @@
 
         <provider
             android:authorities="pro.deves.sunshineapp"
-            android:name=".data.WeatherProvider"/>
+            android:name=".data.WeatherProvider"
+            android:enabled="true"
+            android:exported="true"/>
 
         <activity android:name=".MainActivity" >
             <intent-filter>

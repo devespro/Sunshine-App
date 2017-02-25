@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Vector;
 
 import pro.deves.sunshineapp.data.WeatherContract;
@@ -156,6 +157,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
                     //add into a database
                     ContentValues[] cvArray = new ContentValues[cVVector.size()];
                     cVVector.toArray(cvArray);
+                    Log.e(LOG_TAG, "getWeatherDataFromJson: INSERING " + Arrays.asList(cvArray) );
                     inserted = mContext.getContentResolver().bulkInsert(WeatherContract.WeatherEntry.CONTENT_URI,
                             cvArray);
                     Log.d(LOG_TAG, "FetchWeatherTask Complete. " + inserted + " Inserted");
@@ -180,7 +182,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
         BufferedReader reader = null;
 
         // Will contain the raw JSON response as a string.
-        String forecastJsonStr = null;
+        String forecastJsonStr;
 
         String format = "json";
         String units = "metric";

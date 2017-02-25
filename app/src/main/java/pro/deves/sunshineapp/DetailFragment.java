@@ -1,8 +1,12 @@
 package pro.deves.sunshineapp;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
@@ -14,16 +18,31 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import pro.deves.sunshineapp.data.WeatherContract;
+
 /**
  * Created by deves on 18/02/17.
  */
-public class DetailFragment extends Fragment {
+public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
-    public static final String DETAIL_EXTRA_TEXT = "detail_info";
     public static final String LOG_TAG = DetailFragment.class.getSimpleName();
     private ShareActionProvider mShareActionProvider;
     private static final String SHARE_STRING = "#sunshine";
+    private static final int DETAIL_LOADER_ID = 0;
     private String detailInfo;
+    private static final String[] FORECAST_COLUMNS = {
+            WeatherContract.WeatherEntry.TABLE_NAME + "." + WeatherContract.WeatherEntry._ID,
+            WeatherContract.WeatherEntry.COLUMN_DATE,
+            WeatherContract.WeatherEntry.COLUMN_SHORT_DESCRIPTION,
+            WeatherContract.WeatherEntry.COLUMN_MAX_TEMPERATURE,
+            WeatherContract.WeatherEntry.COLUMN_MIN_TEMPERATURE
+    };
+
+    private static final int ID_INDEX = 0;
+    private static final int DATE_INDEX= 1;
+    private static final int DESC_INDEX = 2;
+    private static final int MAX_INDEX = 3;
+    private static final int MIN_INDEX = 4;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,12 +53,7 @@ public class DetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
-        TextView textView = (TextView) rootView.findViewById(R.id.item_detail_textview);
-        Intent intent = getActivity().getIntent();
-        if (intent != null && intent.hasExtra(DETAIL_EXTRA_TEXT)) {
-            detailInfo = intent.getExtras().getString(DETAIL_EXTRA_TEXT);
-            textView.setText(detailInfo);
-        }
+        getLoaderManager().initLoader(DETAIL_LOADER_ID, savedInstanceState, this);
         return rootView;
     }
 
@@ -53,7 +67,9 @@ public class DetailFragment extends Fragment {
         MenuItem item = menu.findItem(R.id.action_share);
         // Fetch and store ShareActionProvider
         mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
-        setShareIntent(createShareIntent());
+        if (detailInfo != null){
+            setShareIntent(createShareIntent());
+        }
     }
 
     // Call to update the share intent
@@ -82,5 +98,50 @@ public class DetailFragment extends Fragment {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Log.w(LOG_TAG, "In onCreateLoader: ");
+        Intent intent = getActivity().getIntent();
+
+        if (intent == null){
+            return null;
+        }
+        return new CursorLoader(
+                getActivity(),
+                intent.getData(),
+                FORECAST_COLUMNS,
+                null,
+                null,
+                null
+        );
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.v(LOG_TAG, "In onLoadFinished");
+        if (!data.moveToFirst()){
+            return;
+        }
+
+        String dateAsString = Utility.formatDate(data.getLong(DATE_INDEX));
+        String weatherDescription = data.getString(DESC_INDEX);
+        boolean isMetric = Utility.isMetric(getActivity());
+        String high = Utility.formatTemperature(data.getLong(MAX_INDEX), isMetric);
+        String low = Utility.formatTemperature(data.getLong(MIN_INDEX), isMetric);
+        detailInfo = String.format("%s - %s - %s/%s", dateAsString, weatherDescription, high, low);
+        TextView textView = (TextView)getView().findViewById(R.id.item_detail_textview);
+        textView.setText(detailInfo);
+
+        if (mShareActionProvider != null){
+            setShareIntent(createShareIntent());
+        }
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
     }
 }

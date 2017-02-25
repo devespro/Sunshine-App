@@ -8,8 +8,6 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
-import pro.deves.sunshineapp.data.WeatherContract;
-
 /**
  * Created by deves on 23/02/17.
  */
@@ -40,17 +38,12 @@ public class ForecastAdapter extends CursorAdapter {
     }
 
     private String convertCursorRowToUXFormat(Cursor cursor){
-        //get row indices for our cursor
-        int max_tem_index = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_MAX_TEMPERATURE);
-        int min_tem_index = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_MIN_TEMPERATURE);
-        int date_index = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_DATE);
-        int short_descr_index = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_SHORT_DESCRIPTION);
 
         String highAndLow = formatHighLows(
-                cursor.getDouble(max_tem_index),
-                cursor.getDouble(min_tem_index)
+                cursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP),
+                cursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP)
         );
-        return Utility.formatDate(cursor.getLong(date_index)) + "-" + cursor.getString(short_descr_index) +
+        return Utility.formatDate(cursor.getLong(ForecastFragment.COL_WEATHER_DATE)) + "-" + cursor.getString(ForecastFragment.COL_WEATHER_DESC) +
                 "-" + highAndLow;
     }
 

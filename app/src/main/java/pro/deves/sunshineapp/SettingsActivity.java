@@ -5,6 +5,7 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 /**
  * Created by deves on 18/02/17.
@@ -39,6 +40,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         String stringValue = newValue.toString();
+        Log.e("TEST TAG", "onPreferenceChange: NEW VALUE -> " + stringValue);
 
         if (preference instanceof ListPreference) {
             // For list preferences, look up the correct display value in
