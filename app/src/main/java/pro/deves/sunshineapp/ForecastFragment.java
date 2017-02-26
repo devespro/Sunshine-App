@@ -83,7 +83,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        final String locationSetting = Utility.getPrefferedLocation(getActivity());
+        final String locationSetting = Utility.getPreferredLocation(getActivity());
         String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
         Uri weatherLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(
                locationSetting, System.currentTimeMillis()
@@ -101,12 +101,12 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Cursor cursor = (Cursor) parent.getItemAtPosition(position);
                 if (cursor != null){
-                    String setting = Utility.getPrefferedLocation(getActivity());
+                    String setting = Utility.getPreferredLocation(getActivity());
                     Uri uri = WeatherContract.WeatherEntry.buildWeatherLocationWithDate(setting, cursor.getLong(COL_WEATHER_DATE));
                     Intent intent = new Intent(getActivity(), DetailActivity.class);
                     intent.setData(uri);
                     startActivity(intent);
-                    getActivity().overridePendingTransition(R.transition.slide_in_right, android.R.anim.fade_out);
+                   // getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 }
             }
         });
@@ -117,20 +117,24 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     void onLocationChanged(){
         updateWeather();
+        getLoaderManager().restartLoader(LOADER_ID, null, this);
+    }
+
+    void onUnitsChanged(){
         getLoaderManager().restartLoader(LOADER_ID,null,this);
     }
 
 
     private void updateWeather(){
         Log.e(LOG_TAG, "updateWeather: CALLED" );
-        String prefLocation = Utility.getPrefferedLocation(getActivity());
+        String prefLocation = Utility.getPreferredLocation(getActivity());
         FetchWeatherTask weatherTask = new FetchWeatherTask(getActivity());
         weatherTask.execute(prefLocation);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String locationSetting = Utility.getPrefferedLocation(getActivity());
+        String locationSetting = Utility.getPreferredLocation(getActivity());
 
         String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
         Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(

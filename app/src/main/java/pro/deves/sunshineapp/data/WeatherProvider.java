@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import android.support.annotation.Nullable;
 
 /**
  * Created by deves on 20/02/17.
@@ -103,7 +102,6 @@ public class WeatherProvider extends ContentProvider {
         return true;
     }
 
-    @Nullable
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         // Here's the switch statement that, given a URI, will determine what kind of request it is,
@@ -154,7 +152,6 @@ public class WeatherProvider extends ContentProvider {
         return retCursor;
     }
 
-    @Nullable
     @Override
     public String getType(Uri uri) {
         final int match = uriMatcher.match(uri);
@@ -173,7 +170,6 @@ public class WeatherProvider extends ContentProvider {
         }
     }
 
-    @Nullable
     @Override
     public Uri insert(Uri uri, ContentValues values) {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();

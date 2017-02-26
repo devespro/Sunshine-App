@@ -19,7 +19,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Vector;
 
 import pro.deves.sunshineapp.data.WeatherContract;
@@ -43,7 +42,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
      * into an Object hierarchy for us.
      */
     private void getWeatherDataFromJson(String forecastJsonStr, String locationSetting)
-            throws JSONException {
+             {
         Log.i(LOG_TAG, "getWeatherDataFromJson: GOT JSON " + forecastJsonStr);
 
         // These are the names of the JSON objects that need to be extracted.
@@ -157,7 +156,6 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
                     //add into a database
                     ContentValues[] cvArray = new ContentValues[cVVector.size()];
                     cVVector.toArray(cvArray);
-                    Log.e(LOG_TAG, "getWeatherDataFromJson: INSERING " + Arrays.asList(cvArray) );
                     inserted = mContext.getContentResolver().bulkInsert(WeatherContract.WeatherEntry.CONTENT_URI,
                             cvArray);
                     Log.d(LOG_TAG, "FetchWeatherTask Complete. " + inserted + " Inserted");
@@ -186,7 +184,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
 
         String format = "json";
         String units = "metric";
-        int numDays = 7;
+        int numDays = 14;
         String locationSetting = params[0];
 
         try {
@@ -222,7 +220,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
 
             String line;
             while ((line = reader.readLine()) != null) {
-                buffer.append(line + "\n");
+                buffer.append(line).append("\n");
             }
 
             if (buffer.length() == 0) {
@@ -234,11 +232,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
             getWeatherDataFromJson(forecastJsonStr, locationSetting);
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
-            // If the code didn't successfully get the weather data, there's no point in attemping
-            // to parse it.
             return null;
-        } catch (JSONException e) {
-            e.printStackTrace();
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -274,7 +268,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
                 null);
 
         // If it exists, return the current ID
-        if (locationCursor.moveToFirst()){
+        if (locationCursor != null && locationCursor.moveToFirst()){
             int locationIdIndex = locationCursor.getColumnIndex(WeatherContract.LocationEntry._ID);
             locationId = locationCursor.getLong(locationIdIndex);
         } else {

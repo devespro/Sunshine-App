@@ -15,6 +15,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String LOG_TAG = MainActivity.class.getSimpleName();
     private static final String FORECASTFRAGMENT_TAG = "forecastFragment";
     private String mLocation;
+    private boolean mUnits;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,15 +26,22 @@ public class MainActivity extends AppCompatActivity {
                     .add(R.id.container, new ForecastFragment(), FORECASTFRAGMENT_TAG)
                     .commit();
         }
-        mLocation = Utility.getPrefferedLocation(this);
+        mLocation = Utility.getPreferredLocation(this);
+        mUnits = Utility.isMetric(this);
     }
 
     @Override
     protected void onResume() {
-        if (!mLocation.equals(Utility.getPrefferedLocation(this))){
+        if (!mLocation.equals(Utility.getPreferredLocation(this))){
             ForecastFragment forecastFragment = (ForecastFragment) getSupportFragmentManager().findFragmentByTag(FORECASTFRAGMENT_TAG);
             forecastFragment.onLocationChanged();
-            mLocation = Utility.getPrefferedLocation(this);
+            mLocation = Utility.getPreferredLocation(this);
+        }
+
+        if (!mUnits == (Utility.isMetric(this))){
+            ForecastFragment forecastFragment = (ForecastFragment) getSupportFragmentManager().findFragmentByTag(FORECASTFRAGMENT_TAG);
+            forecastFragment.onUnitsChanged();
+            mUnits = Utility.isMetric(this);
         }
         super.onResume();
 
