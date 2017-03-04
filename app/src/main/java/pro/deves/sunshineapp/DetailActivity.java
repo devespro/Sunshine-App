@@ -1,5 +1,6 @@
 package pro.deves.sunshineapp;
 
+
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
@@ -13,10 +14,14 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
 
         if (savedInstanceState == null) {
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(DetailFragment.DETAIL_URI, getIntent().getData());
+            DetailFragment df = new DetailFragment();
+            df.setArguments(bundle);
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.detail_container, new DetailFragment())
+                    .add(R.id.weather_detail_container, df)
                     .commit();
-        }
-    }
 
+            }
+    }
 }

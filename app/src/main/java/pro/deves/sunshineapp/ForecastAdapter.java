@@ -14,6 +14,7 @@ import android.widget.TextView;
  */
 public class ForecastAdapter extends CursorAdapter {
     private Context mContext;
+    private boolean mUseTodayLayout = true;
     //these values could not be bigger then the output of getItemViewType()
     private static final int VIEW_TYPE_TODAY = 0;
     private static final int VIEW_TYPE_FUTURE = 1;
@@ -26,7 +27,7 @@ public class ForecastAdapter extends CursorAdapter {
 
     @Override
     public int getItemViewType(int position) {
-        return (position == 0) ? VIEW_TYPE_TODAY : VIEW_TYPE_FUTURE;
+        return (position == 0) && mUseTodayLayout ? VIEW_TYPE_TODAY : VIEW_TYPE_FUTURE;
     }
 
     @Override
@@ -47,6 +48,10 @@ public class ForecastAdapter extends CursorAdapter {
         ViewHolder viewHolder = new ViewHolder(view);
         view.setTag(viewHolder);
         return view;
+    }
+
+    public void setUseTodayLayout(boolean mUseTodayLayout) {
+        this.mUseTodayLayout = mUseTodayLayout;
     }
 
 

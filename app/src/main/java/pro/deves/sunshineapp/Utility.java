@@ -35,6 +35,9 @@ public class Utility {
         } else {
             temp = temperature;
         }
+        if (temp == -0){
+            temp = 0;
+        }
         return String.format(context.getString(R.string.format_temperature), temp);
     }
 

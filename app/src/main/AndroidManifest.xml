@@ -2,6 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="pro.deves.sunshineapp" >
     <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!-- Permissions required by the sync adapter -->
+    <uses-permission
+        android:name="android.permission.READ_SYNC_SETTINGS"/>
+    <uses-permission
+        android:name="android.permission.WRITE_SYNC_SETTINGS"/>
+    <uses-permission
+        android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,32 +18,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
 
-        <provider
-            android:authorities="pro.deves.sunshineapp"
-            android:name=".data.WeatherProvider"
-            android:enabled="true"
-            android:exported="true"/>
-
-        <activity android:name=".MainActivity" >
+        <activity android:name=".MainActivity"
+            android:theme="@style/ForecastTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
 
-
-       <activity android:name=".DetailActivity"
-           android:label="@string/title_activity_settings"
-           android:parentActivityName=".MainActivity">
-           <meta-data
-               android:name="android.support.PARENT_ACTIVITY"
-               android:value=".MainActivity">
-           </meta-data>
-       </activity>
-
-        <activity android:name=".SettingsActivity"
+        <activity android:name=".DetailActivity"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".MainActivity">
             <meta-data
@@ -42,6 +35,32 @@
                 android:value=".MainActivity">
             </meta-data>
         </activity>
+
+        <activity android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:theme="@style/SettingsTheme"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity">
+            </meta-data>
+        </activity>
+
+        <service android:name=".service.SunshineService"/>
+
+        <provider
+            android:authorities="@string/content_authority"
+            android:name=".data.WeatherProvider"
+            android:exported="false"
+            android:syncable="true" />
+
+        <receiver
+            android:name=".service.SunshineService$AlarmReceiver"
+            android:enabled="true">
+            <intent-filter >
+                <action android:name="pro.deves.sunshineapp.android.action.broadcast"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

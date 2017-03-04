@@ -49,4 +49,8 @@
         Humidity: <xliff:g id="humidity">%1.0f</xliff:g> %%
     </string>
 
+    <!-- SyncAdapter related -->
+    <string name="sync_account_type">sunshineapp.deves.pro</string>
+    <string name="content_authority">pro.deves.sunshineapp</string>
+
 </resources>

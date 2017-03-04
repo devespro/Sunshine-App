@@ -79,12 +79,14 @@
             android:id="@+id/detail_view_wind"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="detail_view"
             />
 
         <TextView
             android:id="@+id/detail_view_pressure"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="pressure"
             />
     </LinearLayout>
 </ScrollView>
